@@ -1,0 +1,19 @@
+name: rag_env
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pytorch
+  - torchvision
+  - torchaudio
+  - cudatoolkit
+  - pip
+  - pip:
+    - sentence-transformers>=3.0.0
+    - spacy>=3.8.0
+    - sqlalchemy>=2.0.0
+    - psycopg2-binary>=2.9.0
+    - tqdm>=4.65.0
+    - numpy>=1.24.0

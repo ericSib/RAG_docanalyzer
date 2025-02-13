@@ -1,0 +1,15 @@
+{
+    "processing_mode": "raw",
+    "ai_settings": {
+        "mode": "raw",
+        "enable_summarization": false,
+        "enable_query_enhancement": false,
+        "enable_semantic_search": false,
+        "llm_model_path": null,
+        "temperature": 0.7,
+        "max_tokens": 512
+    },
+    "batch_size": 10,
+    "chunk_size": 500,
+    "overlap": 50
+}

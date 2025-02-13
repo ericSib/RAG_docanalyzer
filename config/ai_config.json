@@ -1,0 +1,15 @@
+{
+    "processing_mode": "full_ai",
+    "ai_settings": {
+        "mode": "full_ai",
+        "enable_summarization": true,
+        "enable_query_enhancement": true,
+        "enable_semantic_search": true,
+        "llm_model_path": "models/llama-2-3b.gguf",
+        "temperature": 0.7,
+        "max_tokens": 512
+    },
+    "batch_size": 10,
+    "chunk_size": 500,
+    "overlap": 50
+}
