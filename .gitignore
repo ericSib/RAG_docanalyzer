@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 *.so
 .Python
+
+# Distribution / packaging
 build/
 develop-eggs/
 dist/
@@ -20,12 +22,16 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual Environment
-.env
-.venv
-env/
+# Environnement virtuel
+.venv/
 venv/
 ENV/
+env/
+Include/
+Lib/
+Scripts/
+share/
+pyvenv.cfg
 
 # IDE
 .idea/
@@ -33,15 +39,32 @@ ENV/
 *.swp
 *.swo
 
-# Project specific
-output/
-resultats/
+# Logs et données
 *.log
-api.log
-api_tests.log
+data/cache/*
+data/documents/*
+!data/cache/.gitkeep
+!data/documents/.gitkeep
 
-# Dependencies
-node_modules/
+# Fichiers d'audit et de sécurité
+*_audit_*.txt
+*_audit_*.log
+permissions_*.txt
+permissions_*.log
 
-# Local development
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+tests/data/*
+!tests/data/.gitkeep
+
+# Configurations locales
+.env
+*.env
+environment.local.yml
+
+# OS
 .DS_Store
+Thumbs.db

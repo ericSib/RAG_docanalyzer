@@ -1,93 +1,81 @@
 # RAG Document Analyzer
 
-A powerful document analysis tool for RAG (Retrieval Augmented Generation) systems, enabling automated document analysis, preprocessing, and indexing.
+Application d'analyse de documents basée sur le Retrieval-Augmented Generation (RAG).
 
-## Features
+## Fonctionnalités
 
-- Multi-format document support (PDF, Word, PowerPoint, Text)
-- Advanced document analysis and metadata extraction
-- Intelligent text preprocessing and chunking
-- Vector storage with PostgreSQL + pgvector
-- Interactive Streamlit dashboard
-- Comprehensive document metrics and quality analysis
-
-## Requirements
-
-- Python 3.9+
-- PostgreSQL database with pgvector extension
-- 8GB RAM minimum
-- SSD storage (recommended)
-- 4+ CPU cores
-- GPU (optional, recommended for large volumes)
+- Interface graphique Qt moderne et intuitive
+- Analyse sémantique de documents avec sentence-transformers
+- Stockage local des documents et embeddings
+- Recherche sémantique dans les documents
 
 ## Installation
 
-1. Clone the repository:
+### Prérequis
+
+- Python 3.10 ou supérieur
+- pip (gestionnaire de paquets Python)
+
+### Installation depuis les sources
+
+1. Cloner le dépôt :
 ```bash
-git clone [repository-url]
-cd rag-doc-analyzer
+git clone https://github.com/votre-compte/rag-analyzer.git
+cd rag-analyzer
 ```
 
-2. Create a virtual environment:
+2. Créer un environnement virtuel :
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate  # Linux/macOS
+# ou
+.venv\Scripts\activate     # Windows
 ```
 
-3. Install dependencies:
+3. Installer les dépendances :
 ```bash
-pip install -r requirements.txt
+pip install -e ".[dev]"  # Installation avec dépendances de développement
+# ou
+pip install -e .         # Installation minimale
 ```
 
-4. Configure environment variables:
-Create a `.env` file with the following variables:
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/rag_analyzer
-EMBEDDING_MODEL=all-MiniLM-L6-v2
-CHUNK_SIZE=500
-CHUNK_OVERLAP=50
+## Développement
+
+### Structure du projet
+
+```
+rag_analyzer/
+├── src/                    # Code source
+│   ├── domain/            # Modèles et règles métier
+│   ├── application/       # Cas d'utilisation
+│   ├── infrastructure/    # Implémentations techniques
+│   └── presentation/      # Interface utilisateur Qt
+├── tests/                 # Tests
+│   ├── unit/             # Tests unitaires
+│   ├── integration/      # Tests d'intégration
+│   └── e2e/              # Tests end-to-end
+└── config/               # Configuration
+    └── defaults/         # Configurations par défaut
 ```
 
-5. Initialize the database:
+### Tests
+
+Exécuter les tests :
 ```bash
-python scripts/init_db.py
+pytest                 # Tous les tests
+pytest tests/unit      # Tests unitaires uniquement
+pytest tests/e2e      # Tests end-to-end uniquement
 ```
 
-## Usage
+### Outils de développement
 
-1. Start the FastAPI backend:
-```bash
-uvicorn app.main:app --reload
-```
+- `black` : Formatage du code
+- `isort` : Tri des imports
+- `mypy` : Vérification des types
+- `pylint` : Analyse statique
 
-2. Launch the Streamlit interface:
-```bash
-streamlit run app/frontend/main.py
-```
+Configuration dans `pyproject.toml`.
 
-3. Access the dashboard at `http://localhost:8501`
+## Licence
 
-## Project Structure
-
-```
-rag-doc-analyzer/
-├── app/
-│   ├── api/            # FastAPI routes and endpoints
-│   ├── core/           # Core application logic
-│   ├── frontend/       # Streamlit dashboard
-│   ├── models/         # Database models
-│   └── utils/          # Utility functions
-├── scripts/            # Database and setup scripts
-├── tests/              # Test suite
-├── .env                # Environment variables
-├── requirements.txt    # Project dependencies
-└── README.md          # Project documentation
-```
-
-## License
-
-[License Type] - See LICENSE file for details
-
-## Contributing
-
-Contributions are welcome! Please read our Contributing Guidelines for details.
+MIT License. Voir le fichier LICENSE pour plus de détails.

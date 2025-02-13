@@ -1,0 +1,17 @@
+{
+    "ml": {
+        "chunk_size": 500,
+        "chunk_overlap": 100
+    },
+    "storage": {
+        "db_path": "data/dev.db",
+        "documents_dir": "data/dev/documents",
+        "models_dir": "data/dev/models"
+    },
+    "logging": {
+        "level": "DEBUG",
+        "file": "logs/dev.log"
+    },
+    "debug": true,
+    "env": "development"
+}

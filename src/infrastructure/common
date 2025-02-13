@@ -1,0 +1,64 @@
+from pathlib import Path
+import json
+import os
+
+class DesktopConfig:
+    """Configuration pour l'application desktop RAG."""
+    
+    def __init__(self):
+        # Chemins de base
+        self.app_dir = Path(os.getenv('APPDATA')).joinpath('RAGAnalyzer') if os.name == 'nt' else \
+                      Path.home().joinpath('.raganalyzer')
+        
+        # Sous-répertoires
+        self.data_dir = self.app_dir / 'data'
+        self.models_dir = self.app_dir / 'models'
+        self.output_dir = self.app_dir / 'output'
+        
+        # Paramètres d'analyse
+        self.chunk_size = 500
+        self.chunk_overlap = 50
+        self.max_file_size = 10 * 1024 * 1024  # 10MB
+        
+        # Modèles
+        self.spacy_model = 'fr_core_news_md'
+        self.embedding_model = 'paraphrase-multilingual-MiniLM-L12-v2'
+        
+        # Création des répertoires
+        self.setup_directories()
+        
+        # Chargement de la configuration utilisateur
+        self.load_user_config()
+
+    def setup_directories(self):
+        """Crée les répertoires nécessaires."""
+        for directory in [self.data_dir, self.models_dir, self.output_dir]:
+            directory.mkdir(parents=True, exist_ok=True)
+
+    def load_user_config(self):
+        """Charge la configuration utilisateur si elle existe."""
+        config_file = self.app_dir / 'config.json'
+        if config_file.exists():
+            try:
+                with open(config_file, 'r', encoding='utf-8') as f:
+                    user_config = json.load(f)
+                    self.__dict__.update(user_config)
+            except Exception as e:
+                print(f"Erreur lors du chargement de la configuration: {e}")
+
+    def save_user_config(self):
+        """Sauvegarde la configuration utilisateur."""
+        config_file = self.app_dir / 'config.json'
+        try:
+            config_dict = {
+                'chunk_size': self.chunk_size,
+                'chunk_overlap': self.chunk_overlap,
+                'max_file_size': self.max_file_size
+            }
+            with open(config_file, 'w', encoding='utf-8') as f:
+                json.dump(config_dict, f, indent=2)
+        except Exception as e:
+            print(f"Erreur lors de la sauvegarde de la configuration: {e}")
+
+# Instance unique de la configuration
+config = DesktopConfig()

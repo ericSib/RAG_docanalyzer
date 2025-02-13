@@ -1,0 +1,36 @@
+"""Data Transfer Objects module."""
+from dataclasses import dataclass
+from datetime import datetime
+from typing import List, Optional, Dict, Any
+from pathlib import Path
+
+@dataclass
+class DocumentDTO:
+    """DTO pour les documents."""
+    file_path: str
+    filename: str
+    created_at: datetime
+    metadata: Optional[Dict[str, Any]] = None
+    id: Optional[int] = None
+
+@dataclass
+class AnalysisResultDTO:
+    """DTO pour les résultats d'analyse."""
+    document_id: int
+    summary: str
+    chunk_count: int
+    created_at: datetime
+    id: Optional[int] = None
+
+@dataclass
+class AnalysisRequestDTO:
+    """DTO pour les requêtes d'analyse."""
+    file_path: str
+    chunk_size: Optional[int] = None
+    chunk_overlap: Optional[int] = None
+
+@dataclass
+class SearchRequestDTO:
+    """DTO pour les requêtes de recherche."""
+    query: str
+    limit: int = 10

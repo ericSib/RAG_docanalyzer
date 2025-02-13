@@ -1,0 +1,136 @@
+"""Service de gestion des modèles ML."""
+from pathlib import Path
+from typing import List, Optional
+import spacy
+from sentence_transformers import SentenceTransformer
+import torch
+
+from ..utils.logger import Logger
+from ..core.document import DocumentChunk
+
+class MLService:
+    """Service de gestion des modèles ML."""
+    
+    def __init__(
+        self,
+        models_dir: Path,
+        embedding_model_name: str = "paraphrase-multilingual-MiniLM-L12-v2",
+        spacy_model_name: str = "fr_core_news_md",
+        logger: Optional[Logger] = None
+    ):
+        """Initialise le service.
+        
+        Args:
+            models_dir: Répertoire des modèles
+            embedding_model_name: Nom du modèle d'embedding
+            spacy_model_name: Nom du modèle spaCy
+            logger: Logger optionnel
+        """
+        self.models_dir = models_dir
+        self.embedding_model_name = embedding_model_name
+        self.spacy_model_name = spacy_model_name
+        self.logger = logger or Logger()
+        
+        # Modèles
+        self.embedding_model: Optional[SentenceTransformer] = None
+        self.nlp: Optional[spacy.language.Language] = None
+    
+    async def initialize(self) -> None:
+        """Initialise les modèles."""
+        self.logger.info("Initialisation des modèles ML...")
+        
+        # Crée le répertoire des modèles si nécessaire
+        self.models_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Charge le modèle d'embedding
+        try:
+            self.embedding_model = SentenceTransformer(
+                self.embedding_model_name,
+                cache_folder=str(self.models_dir)
+            )
+            self.logger.info(f"Modèle d'embedding chargé: {self.embedding_model_name}")
+        except Exception as e:
+            self.logger.error(f"Erreur lors du chargement du modèle d'embedding: {e}")
+            raise
+        
+        # Charge le modèle spaCy
+        try:
+            self.nlp = spacy.load(self.spacy_model_name)
+            self.logger.info(f"Modèle spaCy chargé: {self.spacy_model_name}")
+        except Exception as e:
+            self.logger.error(f"Erreur lors du chargement du modèle spaCy: {e}")
+            raise
+    
+    async def get_embedding(self, text: str) -> List[float]:
+        """Calcule l'embedding d'un texte.
+        
+        Args:
+            text: Texte à encoder
+            
+        Returns:
+            Liste des valeurs de l'embedding
+        """
+        if not self.embedding_model:
+            raise RuntimeError("Le modèle d'embedding n'est pas initialisé")
+        
+        # Encode le texte
+        with torch.no_grad():
+            embedding = self.embedding_model.encode(
+                text,
+                convert_to_tensor=True,
+                normalize_embeddings=True
+            )
+            return embedding.tolist()
+    
+    async def chunk_text(self, text: str, chunk_size: int = 1000) -> List[DocumentChunk]:
+        """Découpe un texte en chunks.
+        
+        Args:
+            text: Texte à découper
+            chunk_size: Taille maximale d'un chunk
+            
+        Returns:
+            Liste des chunks
+        """
+        if not self.nlp:
+            raise RuntimeError("Le modèle spaCy n'est pas initialisé")
+        
+        # Traite le texte avec spaCy
+        doc = self.nlp(text)
+        
+        # Découpe en chunks en respectant les phrases
+        chunks = []
+        current_chunk = []
+        current_size = 0
+        chunk_id = 0
+        
+        for sent in doc.sents:
+            # Si l'ajout de la phrase dépasse la taille maximale
+            if current_size + len(sent.text) > chunk_size and current_chunk:
+                # Crée un nouveau chunk avec le contenu accumulé
+                chunk_text = " ".join(current_chunk)
+                chunks.append(DocumentChunk(
+                    id=f"chunk_{chunk_id}",
+                    content=chunk_text,
+                    start_index=len(" ".join(chunks)),
+                    end_index=len(" ".join(chunks)) + len(chunk_text)
+                ))
+                chunk_id += 1
+                current_chunk = []
+                current_size = 0
+            
+            # Ajoute la phrase au chunk courant
+            current_chunk.append(sent.text)
+            current_size += len(sent.text)
+        
+        # Ajoute le dernier chunk s'il reste du contenu
+        if current_chunk:
+            chunk_text = " ".join(current_chunk)
+            chunks.append(DocumentChunk(
+                id=f"chunk_{chunk_id}",
+                content=chunk_text,
+                start_index=len(" ".join(chunks)),
+                end_index=len(" ".join(chunks)) + len(chunk_text)
+            ))
+        
+        return chunks
